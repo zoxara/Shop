@@ -712,7 +712,7 @@
             }
         }
     </style>
-  </head><body>
+    </head><body>
     <div class="shop-header" id="shopHeaderContainer">
         <div class="brand-logo" id="brandLogoContainer" onclick="resetHome(event)">
             <span id="brandNameText">ZOXARA SHOP</span>
@@ -766,7 +766,9 @@
             <span class="nav-icon">👤</span>
             <span>Account</span>
         </a>
-    </div><!-- AliExpress Style Product Detail Modal -->
+    </div>
+
+    <!-- Product Detail Modal -->
     <div class="detail-modal-overlay" id="productDetailModal">
         <div class="detail-modal-content">
             <button class="close-detail-modal" onclick="closeProductDetailModal()">×</button>
@@ -774,7 +776,7 @@
                 <img id="modalMainImg" class="detail-main-img" src="" alt="Product">
             </div>
             <div class="detail-thumbs" id="modalThumbnails">
-                <!-- Thumbnails populated here -->
+                <!-- Thumbnails populated dynamically -->
             </div>
             <h2 class="detail-title" id="modalTitle">Product Title</h2>
             <div class="detail-price-row">
@@ -854,22 +856,20 @@
                     headers: { 'X-Master-Key': API_KEY }
                 });
                 let data = await res.json();
-                let rawProducts = data.record || [];
+                let rawProducts = [];
+                if (Array.isArray(data.record)) {
+                    rawProducts = data.record;
+                } else if (data.record && Array.isArray(data.record.record)) {
+                    rawProducts = data.record.record;
+                }
                 
                 cloudProducts = rawProducts.map((p, index) => ({...p, originalIndex: index}));
-                shuffleArray(cloudProducts);
                 updateCategoriesList();
-
+                renderTrendingSlider();
+                renderProducts();
             } catch (e) {
                 console.error("Cloud fetch error:", e);
                 cloudProducts = [];
-            }
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                let j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
             }
         }
 
@@ -886,7 +886,10 @@
 
             let badge = document.getElementById('announcementBadge');
             if (settings.announce) {
-                if(badge) badge.innerText = settings.announce;
+                if(badge) {
+                    badge.innerText = settings.announce;
+                    badge.style.display = 'flex';
+                }
             } else if (settings.announce === "") {
                 if(badge) badge.style.display = 'none';
             }
@@ -895,16 +898,19 @@
             if (settings.heroSubtitle) document.getElementById('heroSubtitle').innerText = settings.heroSubtitle;
 
             let socialContainer = document.getElementById('socialLinksContainer');
-            let socialLinks = settings.socialLinks || [
-                { name: "WhatsApp Channel", url: "#", icon: "💬" },
-                { name: "Telegram Group", url: "#", icon: "📢" },
-                { name: "Facebook Page", url: "#", icon: "📘" }
-            ];
-
+            let soc = settings.social || {};
             let socialHtml = '';
-            socialLinks.forEach(s => {
-                socialHtml += `<a href="${s.url}" target="_blank" class="social-link-item"><span>${s.icon || '🔗'}</span> ${s.name}</a>`;
-            });
+            
+            if(soc.fb) socialHtml += `<a href="${soc.fb}" target="_blank" class="social-link-item"><span>📘</span> Facebook</a>`;
+            if(soc.ig) socialHtml += `<a href="${soc.ig}" target="_blank" class="social-link-item"><span>📷</span> Instagram</a>`;
+            if(soc.pin) socialHtml += `<a href="${soc.pin}" target="_blank" class="social-link-item"><span>📌</span> Pinterest</a>`;
+            if(soc.tt) socialHtml += `<a href="${soc.tt}" target="_blank" class="social-link-item"><span>🎵</span> TikTok</a>`;
+            if(soc.wa) socialHtml += `<a href="${soc.wa}" target="_blank" class="social-link-item"><span>💬</span> WhatsApp</a>`;
+            if(soc.yt) socialHtml += `<a href="${soc.yt}" target="_blank" class="social-link-item"><span>▶️</span> YouTube</a>`;
+
+            if(socialHtml === '') {
+                socialHtml = '<p style="font-size:11px; color:#888; text-align:center;">No social links configured.</p>';
+            }
             socialContainer.innerHTML = socialHtml;
         }
 
@@ -913,13 +919,14 @@
             let categoriesSet = new Set();
 
             cloudProducts.forEach(p => {
-                let cat = p.category || p.badge || 'General';
-                if (cat) categoriesSet.add(cat.trim());
+                let cat = p.category || 'general';
+                if (cat) categoriesSet.add(cat.trim().toLowerCase());
             });
 
             let catHtml = `<button class="category-item-btn" onclick="filterByCategory('')">✨ All Products</button>`;
             categoriesSet.forEach(cat => {
-                catHtml += `<button class="category-item-btn" onclick="filterByCategory('${cat}')">📂 ${cat}</button>`;
+                let capitalized = cat.charAt(0).toUpperCase() + cat.slice(1);
+                catHtml += `<button class="category-item-btn" onclick="filterByCategory('${cat}')">📂 ${capitalized}</button>`;
             });
 
             catContainer.innerHTML = catHtml;
@@ -931,8 +938,9 @@
             closeCategoryModal();
             
             if (catName) {
-                document.getElementById('heroTitle').innerText = `Category: ${catName}`;
-                document.getElementById('heroSubtitle').innerText = `Showing items under ${catName} collection.`;
+                let capitalized = catName.charAt(0).toUpperCase() + catName.slice(1);
+                document.getElementById('heroTitle').innerText = `Category: ${capitalized}`;
+                document.getElementById('heroSubtitle').innerText = `Showing items under ${capitalized} collection.`;
             } else {
                 let settings = JSON.parse(localStorage.getItem('zoxara_site_settings')) || {};
                 document.getElementById('heroTitle').innerText = settings.heroTitle || "Exclusive Collections";
@@ -940,7 +948,6 @@
             }
 
             renderProducts();
-            window.scrollTo({ top: document.getElementById('heroTitle').offsetTop - 100, behavior: 'smooth' });
         }
 
         function renderTrendingSlider() {
@@ -953,26 +960,29 @@
             }
             wrapper.style.display = 'block';
 
-            let manualSliderIds = JSON.parse(localStorage.getItem('zoxara_slider_ids')) || [];
+            let settings = JSON.parse(localStorage.getItem('zoxara_site_settings')) || {};
+            let manualBanners = settings.banners || [];
             let trendingItems = [];
 
-            if (manualSliderIds.length > 0) {
-                trendingItems = manualSliderIds.map(id => cloudProducts.find(p => p.originalIndex === id)).filter(p => p !== undefined);
-            }
-            
-            if (trendingItems.length === 0) {
-                trendingItems = cloudProducts.slice(0, 5);
+            if (manualBanners.length > 0) {
+                trendingItems = manualBanners;
+            } else {
+                trendingItems = cloudProducts.slice(0, 5).map(p => ({
+                    title: p.title,
+                    image: p.image,
+                    link: p.link
+                }));
             }
 
             let sliderHtml = '';
-            trendingItems.forEach((prod, idx) => {
+            trendingItems.forEach((item, idx) => {
                 let activeClass = idx === 0 ? 'active' : '';
                 sliderHtml += `
-                    <div class="slide-item ${activeClass}" style="background-image: url('${prod.image}');" onclick="handleProductClick(${prod.originalIndex})">
+                    <div class="slide-item ${activeClass}" style="background-image: url('${item.image}');" onclick="handleBannerClick('${item.title}')">
                         <div class="slide-overlay">
                             <span class="trending-tag">Featured #${idx + 1}</span>
-                            <div class="slide-title">${prod.title}</div>
-                            <div class="slide-subtitle">Click to explore item ($${prod.price})</div>
+                            <div class="slide-title">${item.title}</div>
+                            <div class="slide-subtitle">Click to explore item</div>
                         </div>
                     </div>
                 `;
@@ -980,8 +990,15 @@
 
             sliderContainer.innerHTML = sliderHtml;
 
-            if (!slideInterval) {
+            if (!slideInterval && trendingItems.length > 1) {
                 slideInterval = setInterval(autoSlide, 3500);
+            }
+        }
+
+        function handleBannerClick(title) {
+            let prod = cloudProducts.find(p => p.title === title);
+            if (prod) {
+                handleProductClick(prod.originalIndex);
             }
         }
 
@@ -992,21 +1009,19 @@
             slides[currentSlideIndex].classList.remove('active');
             currentSlideIndex = (currentSlideIndex + 1) % slides.length;
             slides[currentSlideIndex].classList.add('active');
-        }
-
-        function renderProducts() {
+        }function renderProducts() {
             let grid = document.getElementById('productGrid');
             searchQuery = document.getElementById('searchInput').value.toLowerCase();
             
             let filtered = cloudProducts.filter(prod => {
                 let matchesSearch = prod.title.toLowerCase().includes(searchQuery);
-                let prodCat = prod.category || prod.badge || 'General';
-                let matchesCategory = selectedCategory === '' || prodCat.toLowerCase() === selectedCategory.toLowerCase();
+                let prodCat = (prod.category || 'general').toLowerCase();
+                let matchesCategory = selectedCategory === '' || prodCat === selectedCategory.toLowerCase();
                 return matchesSearch && matchesCategory;
             });
 
             if (filtered.length === 0) {
-                grid.innerHTML = '<p style="grid-column: span 4; text-align: center; color: #888; font-size: 11px; padding: 30px;">No products found.</p>';
+                grid.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #888; font-size: 11px; padding: 30px;">No products found.</p>';
                 document.getElementById('paginationContainer').style.display = 'none';
                 return;
             }
@@ -1074,12 +1089,15 @@
             document.getElementById('modalOldPrice').innerText = prod.oldPrice ? `$${prod.oldPrice}` : '';
             document.getElementById('modalDescription').innerText = prod.description || "High quality item curated exclusively for Zoxara shoppers. Order now to get it delivered quickly!";
 
-            let images = prod.images && Array.isArray(prod.images) && prod.images.length > 0 ? prod.images : [prod.image, prod.image, prod.image, prod.image];
+            let allImages = [prod.image];
+            if (prod.extraImages && Array.isArray(prod.extraImages)) {
+                allImages = allImages.concat(prod.extraImages.filter(img => img !== ""));
+            }
             
-            document.getElementById('modalMainImg').src = images[0];
+            document.getElementById('modalMainImg').src = allImages[0];
 
             let thumbsHtml = '';
-            images.forEach((imgUrl, i) => {
+            allImages.forEach((imgUrl, i) => {
                 let activeClass = i === 0 ? 'active' : '';
                 thumbsHtml += `<img src="${imgUrl}" class="detail-thumb-img ${activeClass}" onclick="changeModalMainImage('${imgUrl}', this)">`;
             });
@@ -1107,6 +1125,19 @@
                 alert("Please fill in all order details.");
                 return;
             }
+
+            let newOrder = {
+                productName: activeModalProduct.title,
+                customerName: name,
+                customerPhone: phone,
+                customerAddress: address,
+                customerNote: "Local Web Order",
+                orderDate: new Date().toLocaleString()
+            };
+
+            let existingOrders = JSON.parse(localStorage.getItem('zoxara_customer_orders')) || [];
+            existingOrders.push(newOrder);
+            localStorage.setItem('zoxara_customer_orders', JSON.stringify(existingOrders));
 
             alert(`Order placed successfully for ${activeModalProduct.title}! We will contact you soon.`);
             closeProductDetailModal();
@@ -1145,6 +1176,17 @@
             } else {
                 navigator.clipboard.writeText(productUrl).then(() => {
                     showToast("Product link copied to clipboard!");
+                });
+            }
+        }
+
+        function shareEntireSite() {
+            let siteUrl = window.location.href;
+            if (navigator.share) {
+                navigator.share({ title: 'Zoxara Shop', url: siteUrl }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(siteUrl).then(() => {
+                    showToast("Shop link copied to clipboard!");
                 });
             }
         }
@@ -1199,31 +1241,34 @@
                 }
                 localStorage.setItem('zoxara_logged_user', email);
                 
-                let loginBtn = document.getElementById('loginBtnElement');
-                let actionsContainer = document.getElementById('userActionsContainer');
-                let initialLetter = email.charAt(0).toUpperCase();
-                
-                if (loginBtn) {
-                    let avatar = document.createElement('div');
-                    avatar.className = 'profile-avatar';
-                    avatar.innerText = initialLetter;
-                    avatar.title = email;
-                    loginBtn.replaceWith(avatar);
-                } else if (actionsContainer) {
-                    let avatar = document.createElement('div');
-                    avatar.className = 'profile-avatar';
-                    avatar.innerText = initialLetter;
-                    avatar.title = email;
-                    actionsContainer.prepend(avatar);
-                }
-
-                let badge = document.getElementById('announcementBadge');
-                if (badge) badge.remove();
-
+                applyUserSession(email);
                 showToast("✓ Successfully Logged In!");
             } else {
                 alert("Please enter a valid email.");
             }
+        }
+
+        function applyUserSession(email) {
+            let loginBtn = document.getElementById('loginBtnElement');
+            let actionsContainer = document.getElementById('userActionsContainer');
+            let initialLetter = email.charAt(0).toUpperCase();
+            
+            if (loginBtn) {
+                let avatar = document.createElement('div');
+                avatar.className = 'profile-avatar';
+                avatar.innerText = initialLetter;
+                avatar.title = email;
+                loginBtn.replaceWith(avatar);
+            } else if (actionsContainer && !document.querySelector('.profile-avatar')) {
+                let avatar = document.createElement('div');
+                avatar.className = 'profile-avatar';
+                avatar.innerText = initialLetter;
+                avatar.title = email;
+                actionsContainer.prepend(avatar);
+            }
+
+            let badge = document.getElementById('announcementBadge');
+            if (badge) badge.remove();
         }
 
         function showToast(msg) {
@@ -1236,30 +1281,10 @@
         window.onload = async function() {
             loadSettings();
             await fetchCloudData();
-            renderTrendingSlider();
-            renderProducts();
 
             let savedUser = localStorage.getItem('zoxara_logged_user');
             if (savedUser) {
-                let loginBtn = document.getElementById('loginBtnElement');
-                let actionsContainer = document.getElementById('userActionsContainer');
-                
-                if (loginBtn) {
-                    let avatar = document.createElement('div');
-                    avatar.className = 'profile-avatar';
-                    avatar.innerText = savedUser.charAt(0).toUpperCase();
-                    avatar.title = savedUser;
-                    loginBtn.replaceWith(avatar);
-                } else if (actionsContainer) {
-                    let avatar = document.createElement('div');
-                    avatar.className = 'profile-avatar';
-                    avatar.innerText = savedUser.charAt(0).toUpperCase();
-                    avatar.title = savedUser;
-                    actionsContainer.prepend(avatar);
-                }
-
-                let badge = document.getElementById('announcementBadge');
-                if (badge) badge.remove();
+                applyUserSession(savedUser);
             }
         };
     </script>
