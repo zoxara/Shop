@@ -78,6 +78,18 @@
             100% { transform: scale(1); }
         }
 
+        .currency-select {
+            background: #f5f5f7;
+            color: #111;
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 5px 8px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
         .action-btn {
             background: #f5f5f7;
             color: #111;
@@ -165,9 +177,7 @@
         .slide-subtitle {
             font-size: 9px;
             color: #ccc;
-        }
-
-        .search-filter-container, .hero-section, .pagination-container {
+        }.search-filter-container, .hero-section, .pagination-container {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
@@ -720,6 +730,10 @@
             <span id="brandSubText">EST. 2026</span>
         </div>
         <div class="user-actions" id="userActionsContainer">
+            <select id="globalCurrencySelect" class="currency-select" onchange="changeGlobalCurrency(this.value)">
+                <option value="$">$ USD</option>
+                <option value="LKR">Rs. LKR</option>
+            </select>
             <div class="offer-badge" id="announcementBadge">🎁 Special Offer</div>
             <button class="action-btn" id="loginBtnElement" onclick="openLoginModal()">Login</button>
             <button class="action-btn" onclick="shareEntireSite()">Share</button>
@@ -759,6 +773,10 @@
             <span class="nav-icon">📂</span>
             <span>Categories</span>
         </a>
+        <a href="#" class="nav-item" onclick="openOrdersModal(); return false;">
+            <span class="nav-icon">📦</span>
+            <span>My Orders</span>
+        </a>
         <a href="#" class="nav-item" onclick="openSocialModal(); return false;">
             <span class="nav-icon">🌐</span>
             <span>Social</span>
@@ -776,9 +794,7 @@
             <div class="detail-main-img-container">
                 <img id="modalMainImg" class="detail-main-img" src="" alt="Product">
             </div>
-            <div class="detail-thumbs" id="modalThumbnails">
-                <!-- Thumbnails populated dynamically -->
-            </div>
+            <div class="detail-thumbs" id="modalThumbnails"></div>
             <h2 class="detail-title" id="modalTitle">Product Title</h2>
             <div class="detail-price-row">
                 <span class="detail-price" id="modalPrice">$0.00</span>
@@ -831,12 +847,24 @@
         </div>
     </div>
 
+    <!-- My Orders Status Modal -->
+    <div class="modal-overlay" id="ordersModal">
+        <div class="login-modal" style="max-width: 420px; text-align: left;">
+            <button class="close-modal" onclick="closeOrdersModal()">×</button>
+            <h2>My Orders & Tracking</h2>
+            <p>Check your order statuses (Pending, Processing, Shipped, Delivered).</p>
+            <div id="myOrdersListContainer" style="max-height: 300px; overflow-y: auto; margin-top: 10px;">
+                <!-- Orders will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
     <!-- Login Modal -->
     <div class="modal-overlay" id="loginModal">
         <div class="login-modal">
             <button class="close-modal" onclick="closeLoginModal()">×</button>
             <h2>Sign In / Register</h2>
-            <p>Enter your email to access your account.</p>
+            <p>Enter your email to access your account & track orders.</p>
             <div id="modalFormContent">
                 <input type="email" id="userLoginEmail" class="login-input" placeholder="name@example.com">
                 <button class="login-submit-btn" onclick="submitLogin()">Continue to Account</button>
@@ -878,6 +906,8 @@
         let currentSlideIndex = 0;
         let slideInterval = null;
         let activeModalProduct = null;
+        let currentCurrency = "$";
+        const LKR_RATE = 305;
 
         (function(){
             emailjs.init("YOUR_PUBLIC_KEY"); 
@@ -897,8 +927,6 @@
                 }
                 
                 cloudProducts = rawProducts.map((p, index) => ({...p, originalIndex: index}));
-                
-                // Shuffle products randomly so order changes on every site load/refresh
                 cloudProducts.sort(() => Math.random() - 0.5);
 
                 updateCategoriesList();
@@ -907,6 +935,25 @@
             } catch (e) {
                 console.error("Cloud fetch error:", e);
                 cloudProducts = [];
+            }
+        }
+
+        function changeGlobalCurrency(val) {
+            currentCurrency = val;
+            renderProducts();
+            if (activeModalProduct) {
+                openProductDetailModal(activeModalProduct);
+            }
+        }
+
+        function formatPrice(val) {
+            let num = parseFloat(val);
+            if (isNaN(num)) return val;
+            if (currentCurrency === "LKR") {
+                let converted = Math.round(num * LKR_RATE);
+                return "Rs. " + converted.toLocaleString();
+            } else {
+                return "$" + num.toFixed(2);
             }
         }
 
@@ -1046,7 +1093,9 @@
             slides[currentSlideIndex].classList.remove('active');
             currentSlideIndex = (currentSlideIndex + 1) % slides.length;
             slides[currentSlideIndex].classList.add('active');
-        }function renderProducts() {
+        }
+
+        function renderProducts() {
             let grid = document.getElementById('productGrid');
             searchQuery = document.getElementById('searchInput').value.toLowerCase();
             
@@ -1074,7 +1123,8 @@
             let html = '';
             paginatedItems.forEach(prod => {
                 let badgeHtml = prod.badge ? `<span class="top-badge">${prod.badge}</span>` : '';
-                let oldPriceHtml = prod.oldPrice ? `<span class="old-price">$${prod.oldPrice}</span>` : '';
+                let oldPriceHtml = prod.oldPrice ? `<span class="old-price">${formatPrice(prod.oldPrice)}</span>` : '';
+                let currentPriceFormatted = formatPrice(prod.price);
                 
                 html += `
                     <div class="product-card" id="product-${prod.originalIndex}" onclick="handleProductClick(${prod.originalIndex})">
@@ -1086,7 +1136,7 @@
                             <div class="product-title">${prod.title}</div>
                             <div class="meta-info">
                                 <div class="price-row">
-                                    <span class="price-val">$${prod.price}</span>
+                                    <span class="price-val">${currentPriceFormatted}</span>
                                     ${oldPriceHtml}
                                 </div>
                             </div>
@@ -1106,9 +1156,7 @@
             document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
 
             checkUrlHash();
-        }
-
-        function handleProductClick(index) {
+        }function handleProductClick(index) {
             let prod = cloudProducts.find(p => p.originalIndex === index);
             if (!prod) return;
 
@@ -1122,8 +1170,8 @@
         function openProductDetailModal(prod) {
             activeModalProduct = prod;
             document.getElementById('modalTitle').innerText = prod.title;
-            document.getElementById('modalPrice').innerText = `$${prod.price}`;
-            document.getElementById('modalOldPrice').innerText = prod.oldPrice ? `$${prod.oldPrice}` : '';
+            document.getElementById('modalPrice').innerText = formatPrice(prod.price);
+            document.getElementById('modalOldPrice').innerText = prod.oldPrice ? formatPrice(prod.oldPrice) : '';
             document.getElementById('modalDescription').innerText = prod.description || "High quality item curated exclusively for Zoxara shoppers. Order now to get it delivered quickly!";
 
             let allImages = [prod.image];
@@ -1139,6 +1187,13 @@
                 thumbsHtml += `<img src="${imgUrl}" class="detail-thumb-img ${activeClass}" onclick="changeModalMainImage('${imgUrl}', this)">`;
             });
             document.getElementById('modalThumbnails').innerHTML = thumbsHtml;
+
+            let loggedEmail = localStorage.getItem('zoxara_logged_user');
+            if (loggedEmail) {
+                let namePart = loggedEmail.split('@')[0];
+                let fInput = document.getElementById('orderFirstName');
+                if (fInput && !fInput.value) fInput.value = namePart;
+            }
 
             document.getElementById('productDetailModal').classList.add('active');
         }
@@ -1170,14 +1225,13 @@
 
             let newOrder = {
                 productName: activeModalProduct.title,
-                firstName: firstName,
-                lastName: lastName,
-                contactNumber1: phone1,
-                contactNumber2: phone2,
-                address: address,
-                district: district,
-                addressInez: addressInez,
-                additionalInformation: additionalInfo,
+                customerEmail: localStorage.getItem('zoxara_logged_user') || phone1,
+                customerName: firstName + " " + lastName,
+                customerPhone: phone1,
+                customerAddress: address + ", " + district + " (" + addressInez + ")",
+                customerNote: additionalInfo,
+                status: "Pending",
+                adminNote: "",
                 orderDate: new Date().toLocaleString()
             };
 
@@ -1185,7 +1239,7 @@
             existingOrders.push(newOrder);
             localStorage.setItem('zoxara_customer_orders', JSON.stringify(existingOrders));
 
-            alert(`Order placed successfully for ${activeModalProduct.title}! We will contact you soon.`);
+            alert(`Order placed successfully for ${activeModalProduct.title}! You can check its status anytime via 'My Orders'.`);
             closeProductDetailModal();
             
             document.getElementById('orderFirstName').value = '';
@@ -1196,6 +1250,46 @@
             document.getElementById('orderDistrict').value = '';
             document.getElementById('orderAddressInez').value = '';
             document.getElementById('orderAdditionalInfo').value = '';
+        }
+
+        function openOrdersModal() {
+            let container = document.getElementById('myOrdersListContainer');
+            let orders = JSON.parse(localStorage.getItem('zoxara_customer_orders')) || [];
+            let loggedEmail = localStorage.getItem('zoxara_logged_user');
+
+            let userOrders = orders.filter(o => !loggedEmail || o.customerEmail === loggedEmail || o.customerPhone === loggedEmail);
+
+            if (userOrders.length === 0) {
+                container.innerHTML = '<p style="font-size: 11px; color: #888; text-align:center; padding: 20px;">No active orders found.</p>';
+            } else {
+                let html = '';
+                userOrders.slice().reverse().forEach(ord => {
+                    let st = ord.status || 'Pending';
+                    let badgeColor = '#e67e22';
+                    if (st === 'Processing') badgeColor = '#3498db';
+                    if (st === 'Shipped') badgeColor = '#9b59b6';
+                    if (st === 'Delivered') badgeColor = '#2ecc71';
+
+                    html += `
+                        <div style="background: #1e1e22; padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid ${badgeColor}; color: #fff;">
+                            <div style="font-size: 12px; font-weight: bold; margin-bottom: 4px;">📦 ${ord.productName}</div>
+                            <div style="font-size: 11px; color: #ccc;">📍 Address: ${ord.customerAddress}</div>
+                            <div style="font-size: 11px; color: #ccc; margin-top: 2px;">🕒 Date: ${ord.orderDate || 'Recent'}</div>
+                            <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 10px; background: ${badgeColor}; padding: 3px 8px; border-radius: 6px; font-weight: bold; text-transform: uppercase;">${st}</span>
+                                <span style="font-size: 10px; color: #aaa;">${ord.adminNote ? 'Note: ' + ord.adminNote : ''}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            document.getElementById('ordersModal').classList.add('active');
+        }
+
+        function closeOrdersModal() {
+            document.getElementById('ordersModal').classList.remove('active');
         }
 
         function changePage(direction) {
@@ -1320,7 +1414,7 @@
             }
 
             let badge = document.getElementById('announcementBadge');
-            if (badge) badge.remove();
+            if (badge) badge.style.display = 'none';
         }
 
         function showToast(msg) {
