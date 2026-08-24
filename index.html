@@ -348,7 +348,6 @@
             cursor: pointer;
         }
 
-        /* Product Detail Modal Styles */
         .detail-modal-overlay {
             position: fixed;
             top: 0;
@@ -854,7 +853,6 @@
             <h2>My Orders & Tracking</h2>
             <p>Check your order statuses (Pending, Processing, Shipped, Delivered).</p>
             <div id="myOrdersListContainer" style="max-height: 300px; overflow-y: auto; margin-top: 10px;">
-                <!-- Orders will be loaded here dynamically -->
             </div>
         </div>
     </div>
@@ -893,7 +891,6 @@
     </div>
 
     <div class="toast-msg" id="toastMessage">Link copied to clipboard!</div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
     <script>
         const BIN_ID = "6a6f1327da38895dfeaf29ff";
         const API_KEY = "$2a$10$zigECDZrlUS6mqw0FxAIrOGb5MGmxPkU/ml0.kgX/dTlyHeqvRBv2";
@@ -1014,9 +1011,7 @@
             });
 
             catContainer.innerHTML = catHtml;
-        }
-
-        function filterByCategory(catName) {
+        }function filterByCategory(catName) {
             selectedCategory = catName;
             currentPage = 1;
             closeCategoryModal();
@@ -1156,7 +1151,9 @@
             document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
 
             checkUrlHash();
-        }function handleProductClick(index) {
+        }
+
+        function handleProductClick(index) {
             let prod = cloudProducts.find(p => p.originalIndex === index);
             if (!prod) return;
 
@@ -1206,9 +1203,7 @@
 
         function closeProductDetailModal() {
             document.getElementById('productDetailModal').classList.remove('active');
-        }
-
-        function submitProductOrder() {
+        }function submitProductOrder() {
             let firstName = document.getElementById('orderFirstName').value.trim();
             let lastName = document.getElementById('orderLastName').value.trim();
             let phone1 = document.getElementById('orderPhone1').value.trim();
@@ -1223,12 +1218,13 @@
                 return;
             }
 
+            let fullAddress = address + ", " + district + " (" + addressInez + ")";
             let newOrder = {
                 productName: activeModalProduct.title,
                 customerEmail: localStorage.getItem('zoxara_logged_user') || phone1,
                 customerName: firstName + " " + lastName,
                 customerPhone: phone1,
-                customerAddress: address + ", " + district + " (" + addressInez + ")",
+                customerAddress: fullAddress,
                 customerNote: additionalInfo,
                 status: "Pending",
                 adminNote: "",
@@ -1239,7 +1235,19 @@
             existingOrders.push(newOrder);
             localStorage.setItem('zoxara_customer_orders', JSON.stringify(existingOrders));
 
-            alert(`Order placed successfully for ${activeModalProduct.title}! You can check its status anytime via 'My Orders'.`);
+            // WhatsApp Direct Integration to your number +94754811131
+            let waMessage = `*New Order Received!*%0A%0A` +
+                            `📦 *Product:* ${activeModalProduct.title}%0A` +
+                            `💰 *Price:* ${formatPrice(activeModalProduct.price)}%0A` +
+                            `👤 *Name:* ${firstName} ${lastName}%0A` +
+                            `📞 *Phone:* ${phone1}${phone2 ? ' / ' + phone2 : ''}%0A` +
+                            `📍 *Address:* ${fullAddress}%0A` +
+                            `📝 *Note:* ${additionalInfo || 'None'}`;
+            
+            let waUrl = `https://wa.me/94754811131?text=${waMessage}`;
+            window.open(waUrl, '_blank');
+
+            alert(`Order placed successfully for ${activeModalProduct.title}! Redirecting to WhatsApp to send order details to admin.`);
             closeProductDetailModal();
             
             document.getElementById('orderFirstName').value = '';
@@ -1316,7 +1324,6 @@
 
         function shareProduct(index) {
             let productUrl = window.location.origin + window.location.pathname + `#product-${index}`;
-            
             if (navigator.share) {
                 navigator.share({ title: 'Zoxara Shop Item', url: productUrl }).catch(console.error);
             } else {
@@ -1351,42 +1358,23 @@
             }
         }
 
-        function openLoginModal() {
-            document.getElementById('loginModal').classList.add('active');
-        }
-
-        function closeLoginModal() {
-            document.getElementById('loginModal').classList.remove('active');
-        }
-
-        function openCategoryModal() {
-            document.getElementById('categoryModal').classList.add('active');
-        }
-
-        function closeCategoryModal() {
-            document.getElementById('categoryModal').classList.remove('active');
-        }
-
-        function openSocialModal() {
-            document.getElementById('socialModal').classList.add('active');
-        }
-
-        function closeSocialModal() {
-            document.getElementById('socialModal').classList.remove('active');
-        }
+        function openLoginModal() { document.getElementById('loginModal').classList.add('active'); }
+        function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
+        function openCategoryModal() { document.getElementById('categoryModal').classList.add('active'); }
+        function closeCategoryModal() { document.getElementById('categoryModal').classList.remove('active'); }
+        function openSocialModal() { document.getElementById('socialModal').classList.add('active'); }
+        function closeSocialModal() { document.getElementById('socialModal').classList.remove('active'); }
 
         function submitLogin() {
             let email = document.getElementById('userLoginEmail').value.trim();
             if (email) {
                 closeLoginModal();
-                
                 let subscribers = JSON.parse(localStorage.getItem('zoxara_subscribers')) || [];
                 if (!subscribers.includes(email)) {
                     subscribers.push(email);
                     localStorage.setItem('zoxara_subscribers', JSON.stringify(subscribers));
                 }
                 localStorage.setItem('zoxara_logged_user', email);
-                
                 applyUserSession(email);
                 showToast("✓ Successfully Logged In!");
             } else {
