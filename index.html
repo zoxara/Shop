@@ -99,6 +99,10 @@
             font-size: 11px;
             font-weight: 500;
             cursor: pointer;
+            transition: background 0.2s;
+        }
+        .action-btn:hover {
+            background: #e5e5ea;
         }
 
         .profile-avatar {
@@ -177,7 +181,9 @@
         .slide-subtitle {
             font-size: 9px;
             color: #ccc;
-        }.search-filter-container, .hero-section, .pagination-container {
+        }
+
+        .search-filter-container, .hero-section, .pagination-container {
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
@@ -203,6 +209,11 @@
             color: #111;
             font-size: 13px;
             outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .search-input:focus {
+            background: #ffffff;
+            border-color: #0071e3;
         }
         .search-icon {
             position: absolute;
@@ -250,6 +261,11 @@
             justify-content: space-between;
             scroll-margin-top: 80px;
             cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+                .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
         .product-card.highlighted {
             border: 2px solid #ff4757;
@@ -337,6 +353,10 @@
             justify-content: center;
             gap: 2px;
             cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-view:hover {
+            background: #333;
         }
         .btn-share {
             background: #f0f0f2;
@@ -346,6 +366,10 @@
             border-radius: 7px;
             font-size: 11px;
             cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-share:hover {
+            background: #e0e0e4;
         }
 
         .detail-modal-overlay {
@@ -476,6 +500,47 @@
             font-weight: 700;
             margin-bottom: 10px;
         }
+        .qty-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            background: #f5f5f7;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        .qty-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .qty-btn {
+            background: #ffffff;
+            border: 1px solid #ccc;
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .qty-val {
+            font-size: 13px;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+        }
+        .total-price-tag {
+            margin-left: auto;
+            font-size: 13px;
+            font-weight: 700;
+            color: #ff4757;
+        }
         .order-input, .order-select {
             width: 100%;
             padding: 10px 12px;
@@ -498,6 +563,7 @@
             font-weight: 700;
             cursor: pointer;
             margin-top: 5px;
+            transition: background 0.2s;
         }
         .submit-order-btn:hover {
             background: #e03e4d;
@@ -722,7 +788,8 @@
             }
         }
     </style>
-</head><body>
+</head>
+<body>
     <div class="shop-header" id="shopHeaderContainer">
         <div class="brand-logo" id="brandLogoContainer" onclick="resetHome(event)">
             <span id="brandNameText">ZOXARA SHOP</span>
@@ -730,8 +797,8 @@
         </div>
         <div class="user-actions" id="userActionsContainer">
             <select id="globalCurrencySelect" class="currency-select" onchange="changeGlobalCurrency(this.value)">
+                <option value="LKR" selected>Rs. LKR</option>
                 <option value="$">$ USD</option>
-                <option value="LKR">Rs. LKR</option>
             </select>
             <div class="offer-badge" id="announcementBadge">🎁 Special Offer</div>
             <button class="action-btn" id="loginBtnElement" onclick="openLoginModal()">Login</button>
@@ -785,8 +852,7 @@
             <span>Account</span>
         </a>
     </div>
-
-    <!-- Product Detail Modal -->
+                <!-- Product Detail Modal -->
     <div class="detail-modal-overlay" id="productDetailModal">
         <div class="detail-modal-content">
             <button class="close-detail-modal" onclick="closeProductDetailModal()">×</button>
@@ -796,7 +862,7 @@
             <div class="detail-thumbs" id="modalThumbnails"></div>
             <h2 class="detail-title" id="modalTitle">Product Title</h2>
             <div class="detail-price-row">
-                <span class="detail-price" id="modalPrice">$0.00</span>
+                <span class="detail-price" id="modalPrice">Rs. 0</span>
                 <span class="detail-old-price" id="modalOldPrice"></span>
             </div>
             <div class="detail-description-box" id="modalDescription">
@@ -806,6 +872,15 @@
             <!-- Buy / Order Form inside Modal -->
             <div class="order-form-section">
                 <h3>📦 Place Your Order</h3>
+                <div class="qty-row">
+                    <span class="qty-label">Quantity:</span>
+                    <div class="qty-control">
+                        <button class="qty-btn" onclick="updateOrderQty(-1)">-</button>
+                        <span class="qty-val" id="orderQtyVal">1</span>
+                        <button class="qty-btn" onclick="updateOrderQty(1)">+</button>
+                    </div>
+                    <span class="total-price-tag" id="orderTotalPriceTag">Total: Rs. 0</span>
+                </div>
                 <input type="text" id="orderFirstName" class="order-input" placeholder="First Name">
                 <input type="text" id="orderLastName" class="order-input" placeholder="Last Name">
                 <input type="text" id="orderPhone1" class="order-input" placeholder="Contact Number 1">
@@ -852,8 +927,7 @@
             <button class="close-modal" onclick="closeOrdersModal()">×</button>
             <h2>My Orders & Tracking</h2>
             <p>Check your order statuses (Pending, Processing, Shipped, Delivered).</p>
-            <div id="myOrdersListContainer" style="max-height: 300px; overflow-y: auto; margin-top: 10px;">
-            </div>
+            <div id="myOrdersListContainer" style="max-height: 300px; overflow-y: auto; margin-top: 10px;"></div>
         </div>
     </div>
 
@@ -890,8 +964,9 @@
         </div>
     </div>
 
-    <div class="toast-msg" id="toastMessage">Link copied to clipboard!</div><script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script>
+    <div class="toast-msg" id="toastMessage">Link copied to clipboard!</div>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+        <script>
         const BIN_ID = "6a6f1327da38895dfeaf29ff";
         const API_KEY = "$2a$10$zigECDZrlUS6mqw0FxAIrOGb5MGmxPkU/ml0.kgX/dTlyHeqvRBv2";
         
@@ -903,7 +978,8 @@
         let currentSlideIndex = 0;
         let slideInterval = null;
         let activeModalProduct = null;
-        let currentCurrency = "$";
+        let currentCurrency = "LKR";
+        let orderQty = 1;
         const LKR_RATE = 305;
 
         (function(){
@@ -943,12 +1019,14 @@
             }
         }
 
-        function formatPrice(val) {
+        function formatPrice(val, prod) {
             let num = parseFloat(val);
             if (isNaN(num)) return val;
+            if (prod && (prod.currency === "USD" || prod.currency === "$" || prod.isUSD === true)) {
+                return "$" + num.toFixed(2);
+            }
             if (currentCurrency === "LKR") {
-                let converted = Math.round(num * LKR_RATE);
-                return "Rs. " + converted.toLocaleString();
+                return "Rs. " + Math.round(num).toLocaleString();
             } else {
                 return "$" + num.toFixed(2);
             }
@@ -1011,7 +1089,9 @@
             });
 
             catContainer.innerHTML = catHtml;
-        }function filterByCategory(catName) {
+        }
+
+        function filterByCategory(catName) {
             selectedCategory = catName;
             currentPage = 1;
             closeCategoryModal();
@@ -1118,8 +1198,8 @@
             let html = '';
             paginatedItems.forEach(prod => {
                 let badgeHtml = prod.badge ? `<span class="top-badge">${prod.badge}</span>` : '';
-                let oldPriceHtml = prod.oldPrice ? `<span class="old-price">${formatPrice(prod.oldPrice)}</span>` : '';
-                let currentPriceFormatted = formatPrice(prod.price);
+                let oldPriceHtml = prod.oldPrice ? `<span class="old-price">${formatPrice(prod.oldPrice, prod)}</span>` : '';
+                let currentPriceFormatted = formatPrice(prod.price, prod);
                 
                 html += `
                     <div class="product-card" id="product-${prod.originalIndex}" onclick="handleProductClick(${prod.originalIndex})">
@@ -1152,8 +1232,7 @@
 
             checkUrlHash();
         }
-
-        function handleProductClick(index) {
+                    function handleProductClick(index) {
             let prod = cloudProducts.find(p => p.originalIndex === index);
             if (!prod) return;
 
@@ -1166,10 +1245,15 @@
 
         function openProductDetailModal(prod) {
             activeModalProduct = prod;
+            orderQty = 1;
+            document.getElementById('orderQtyVal').innerText = orderQty;
+            
             document.getElementById('modalTitle').innerText = prod.title;
-            document.getElementById('modalPrice').innerText = formatPrice(prod.price);
-            document.getElementById('modalOldPrice').innerText = prod.oldPrice ? formatPrice(prod.oldPrice) : '';
+            document.getElementById('modalPrice').innerText = formatPrice(prod.price, prod);
+            document.getElementById('modalOldPrice').innerText = prod.oldPrice ? formatPrice(prod.oldPrice, prod) : '';
             document.getElementById('modalDescription').innerText = prod.description || "High quality item curated exclusively for Zoxara shoppers. Order now to get it delivered quickly!";
+
+            calculateModalTotal();
 
             let allImages = [prod.image];
             if (prod.extraImages && Array.isArray(prod.extraImages)) {
@@ -1195,6 +1279,20 @@
             document.getElementById('productDetailModal').classList.add('active');
         }
 
+        function updateOrderQty(change) {
+            orderQty += change;
+            if (orderQty < 1) orderQty = 1;
+            document.getElementById('orderQtyVal').innerText = orderQty;
+            calculateModalTotal();
+        }
+
+        function calculateModalTotal() {
+            if (!activeModalProduct) return;
+            let unitPrice = parseFloat(activeModalProduct.price) || 0;
+            let total = unitPrice * orderQty;
+            document.getElementById('orderTotalPriceTag').innerText = "Total: " + formatPrice(total, activeModalProduct);
+        }
+
         function changeModalMainImage(url, thumbEl) {
             document.getElementById('modalMainImg').src = url;
             document.querySelectorAll('.detail-thumb-img').forEach(t => t.classList.remove('active'));
@@ -1203,7 +1301,9 @@
 
         function closeProductDetailModal() {
             document.getElementById('productDetailModal').classList.remove('active');
-        }function submitProductOrder() {
+        }
+
+        function submitProductOrder() {
             let firstName = document.getElementById('orderFirstName').value.trim();
             let lastName = document.getElementById('orderLastName').value.trim();
             let phone1 = document.getElementById('orderPhone1').value.trim();
@@ -1218,9 +1318,15 @@
                 return;
             }
 
+            let unitPrice = parseFloat(activeModalProduct.price) || 0;
+            let totalPrice = unitPrice * orderQty;
+
             let fullAddress = address + ", " + district + " (" + addressInez + ")";
             let newOrder = {
                 productName: activeModalProduct.title,
+                quantity: orderQty,
+                unitPrice: formatPrice(unitPrice, activeModalProduct),
+                totalPrice: formatPrice(totalPrice, activeModalProduct),
                 customerEmail: localStorage.getItem('zoxara_logged_user') || phone1,
                 customerName: firstName + " " + lastName,
                 customerPhone: phone1,
@@ -1235,10 +1341,10 @@
             existingOrders.push(newOrder);
             localStorage.setItem('zoxara_customer_orders', JSON.stringify(existingOrders));
 
-            // WhatsApp Direct Integration to your number +94754811131
             let waMessage = `*New Order Received!*%0A%0A` +
                             `📦 *Product:* ${activeModalProduct.title}%0A` +
-                            `💰 *Price:* ${formatPrice(activeModalProduct.price)}%0A` +
+                            `🔢 *Quantity:* ${orderQty}%0A` +
+                            `💰 *Total Price:* ${formatPrice(totalPrice, activeModalProduct)}%0A` +
                             `👤 *Name:* ${firstName} ${lastName}%0A` +
                             `📞 *Phone:* ${phone1}${phone2 ? ' / ' + phone2 : ''}%0A` +
                             `📍 *Address:* ${fullAddress}%0A` +
@@ -1278,9 +1384,12 @@
                     if (st === 'Shipped') badgeColor = '#9b59b6';
                     if (st === 'Delivered') badgeColor = '#2ecc71';
 
+                    let qtyDisplay = ord.quantity ? ` (x${ord.quantity})` : '';
+                    let priceDisplay = ord.totalPrice ? ` - ${ord.totalPrice}` : '';
+
                     html += `
                         <div style="background: #1e1e22; padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid ${badgeColor}; color: #fff;">
-                            <div style="font-size: 12px; font-weight: bold; margin-bottom: 4px;">📦 ${ord.productName}</div>
+                            <div style="font-size: 12px; font-weight: bold; margin-bottom: 4px;">📦 ${ord.productName}${qtyDisplay}${priceDisplay}</div>
                             <div style="font-size: 11px; color: #ccc;">📍 Address: ${ord.customerAddress}</div>
                             <div style="font-size: 11px; color: #ccc; margin-top: 2px;">🕒 Date: ${ord.orderDate || 'Recent'}</div>
                             <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
