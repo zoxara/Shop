@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="pageTitle">Zoxara Shop</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+        }
+        html, body {
+            background-color: #ffffff;
+            color: #1d1d1f;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow-x: hidden;
+            padding-bottom: 80px !important;
+        }
+
+        .shop-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .brand-logo {
+            font-size: 15px;
+            font-weight: 800;
+            color: #111;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            line-height: 1.2;
+            cursor: pointer;
+        }
+        .brand-logo span {
+            display: block;
+            font-size: 10px;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 3px;
+        }
+        .user-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .offer-badge {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: #fff;
+            font-size: 9px;
+            font-weight: 600;
+            padding: 5px 7px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            box-shadow: 0 3px 10px rgba(255, 65, 108, 0.3);
+            animation: pulseOffer 2s infinite;
+            white-space: nowrap;
+        }
+        @keyframes pulseOffer {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+
+        .currency-select {
+            background: #f5f5f7;
+            color: #111;
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 5px 8px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .action-btn {
+            background: #f5f5f7;
+            color: #111;
+            border: 1px solid rgba(0,0,0,0.1);
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .action-btn:hover {
+            background: #e5e5ea;
+        }
+
+        .profile-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #111;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            border: 2px solid #ddd;
+            cursor: pointer;
+        }
+
+        .trending-slider-container {
+            padding: 12px 15px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .trending-slider {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #111;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .slide-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            display: flex;
+            align-items: flex-end;
+            text-decoration: none;
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+        }
+        .slide-item.active {
+            opacity: 1;
+        }
+        .slide-overlay {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));
+            color: #fff;
+        }
+        .trending-tag {
+            background: #ff4757;
+            color: #fff;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+        .slide-title {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .slide-subtitle {
+            font-size: 9px;
+            color: #ccc;
+        }
+
+        .search-filter-container, .hero-section, .pagination-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+        .search-filter-container {
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
+        .search-box {
+            position: relative;
+            margin-bottom: 5px;
+            display: flex;
+            gap: 8px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 11px 14px 11px 38px;
+            background: #f5f5f7;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            color: #111;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .search-input:focus {
+            background: #ffffff;
+            border-color: #0071e3;
+        }
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 13px;
+        }
+
+        .hero-section {
+            padding-top: 10px;
+            padding-bottom: 4px;
+            text-align: center;
+        }
+        .hero-section h1 {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 2px;
+            color: #111;
+        }
+        .hero-section p {
+            font-size: 11px;
+            color: #666;
+            font-weight: 300;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 8px 15px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .product-card {
+            background: #fafafa;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            scroll-margin-top: 80px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .product-card.highlighted {
+            border: 2px solid #ff4757;
+            box-shadow: 0 0 15px rgba(255, 71, 87, 0.4);
+        }
+        .img-container {
+            position: relative;
+            width: 100%;
+            height: 150px;
+            background: #eee;
+        }
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .top-badge {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(5px);
+            color: #b8860b;
+            font-size: 8px;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 5px;
+            border: 1px solid rgba(184, 134, 11, 0.2);
+        }
+        .product-body {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .product-title {
+            font-size: 11px;
+            font-weight: 500;
+            color: #111;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+            height: 30px;
+        }
+        .meta-info {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 8px;
+        }
+        .price-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .price-val {
+            font-size: 12px;
+            font-weight: 700;
+            color: #111;
+        }
+        .old-price {
+            font-size: 9px;
+            color: #888;
+            text-decoration: line-through;
+        }
+        .card-actions {
+            display: flex;
+            gap: 4px;
+        }
+        .btn-view {
+            flex: 1;
+            background: #111;
+            color: #fff;
+            border: none;
+            padding: 8px 4px;
+            border-radius: 7px;
+            font-size: 10px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-view:hover {
+            background: #333;
+        }
+        .btn-share {
+            background: #f0f0f2;
+            color: #111;
+            border: 1px solid #ddd;
+            padding: 8px 8px;
+            border-radius: 7px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-share:hover {
+            background: #e0e0e4;
+        }
+
+        .detail-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 2500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .detail-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .detail-modal-content {
+            background: #fff;
+            color: #111;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            overflow-y: auto;
+            padding: 20px;
+            position: relative;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .detail-modal-overlay.active .detail-modal-content {
+            transform: translateY(0);
+        }
+        .close-detail-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f0f0f2;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .detail-main-img-container {
+            width: 100%;
+            height: 260px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+        }
+        .detail-main-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .detail-thumbs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        .detail-thumb-img {
+            width: 55px;
+            height: 55px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid transparent;
+            cursor: pointer;
+            flex-shrink: 0;
+            background: #eee;
+        }
+        .detail-thumb-img.active {
+            border-color: #ff4757;
+        }
+        .detail-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #111;
+        }
+        .detail-price-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .detail-price {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ff4757;
+        }
+        .detail-old-price {
+            font-size: 13px;
+            color: #888;
+            text-decoration: line-through;
+        }
+        .detail-description-box {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #eee;
+        }
+        .order-form-section {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        .order-form-section h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .qty-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            background: #f5f5f7;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        .qty-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+        .qty-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .qty-btn {
+            background: #ffffff;
+            border: 1px solid #ccc;
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .qty-val {
+            font-size: 13px;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+        }
+        .total-price-tag {
+            margin-left: auto;
+            font-size: 13px;
+            font-weight: 700;
+            color: #ff4757;
+        }
+        .order-input, .order-select {
+            width: 100%;
+            padding: 10px 12px;
+            background: #f5f5f7;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 10px;
+            outline: none;
+            color: #111;
+        }
+        .submit-order-btn {
+            width: 100%;
+            background: #ff4757;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: background 0.2s;
+        }
+        .submit-order-btn:hover {
+            background: #e03e4d;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 9px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .nav-item span.nav-icon {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+        .nav-item.active {
+            color: #111;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 15px 15px;
+            width: 100%;
+        }
+        .page-btn {
+            background: #f5f5f7;
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #111;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .page-info {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .login-modal {
+            background: #141416;
+            color: #f5f5f7;
+            width: 90%;
+            max-width: 340px;
+            padding: 24px 20px;
+            border-radius: 18px;
+            text-align: center;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .login-modal h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+        .login-modal p {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 18px;
+        }
+        .login-input {
+            width: 100%;
+            padding: 11px 14px;
+            background: #1e1e22;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 9px;
+            color: #fff;
+            font-size: 12px;
+            outline: none;
+            margin-bottom: 12px;
+        }
+        .login-submit-btn {
+            width: 100%;
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 11px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .social-list, .category-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .social-link-item, .category-item-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #1e1e22;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+        .social-link-item:hover, .category-item-btn:hover {
+            background: #2a2a30;
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #111;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 500;
+            z-index: 3000;
+            transition: transform 0.4s ease;
+            text-align: center;
+            width: 90%;
+            max-width: 320px;
+        }
+        .toast-msg.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (min-width: 768px) {
+            .trending-slider {
+                height: 320px;
+                border-radius: 20px;
+            }
+            .slide-overlay {
+                padding: 24px;
+            }
+            .trending-tag {
+                font-size: 11px;
+                padding: 4px 10px;
+                margin-bottom: 8px;
+            }
+            .slide-title {
+                font-size: 24px;
+                font-weight: 700;
+                margin-bottom: 6px;
+            }
+            .slide-subtitle {
+                font-size: 14px;
+            }
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 16px;
+            }
+            .img-container {
+                height: 200px;
+            }
+            .product-title {
+                font-size: 13px;
+                height: 36px;
+            }
+            .price-val {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shop-header" id="shopHeaderContainer">
+        <div class="brand-logo" id="brandLogoContainer" onclick="resetHome(event)">
+            <span id="brandNameText">ZOXARA SHOP</span>
+            <span id="brandSubText">EST. 2026</span>
+        </div>
+        <div class="user-actions" id="userActionsContainer">
+            <div class="offer-badge" id="announcementBadge">🎁 Special Offer</div>
+            <button class="action-btn" id="loginBtnElement" onclick="openLoginModal()">Login</button>
+            <button class="action-btn" onclick="shareEntireSite()">Share</button>
+        </div>
+    </div>
+
+    <div class="search-filter-container">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search products..." onkeyup="filterProducts()">
+        </div>
+    </div>
+
+    <div class="trending-slider-container" id="trendingSliderContainer">
+        <div class="trending-slider" id="trendingSlider"></div>
+    </div>
+
+    <div class="hero-section">
+        <h1 id="heroTitle">Exclusive Collections</h1>
+        <p id="heroSubtitle">Discover our latest curated arrivals and essentials.</p>
+    </div>
+
+    <div class="product-grid" id="productGrid"></div>
+
+    <div class="pagination-container" id="paginationContainer">
+        <button class="page-btn" id="prevBtn" onclick="changePage(-1)">Previous</button>
+        <span class="page-info" id="pageInfo">Page 1 of 1</span>
+        <button class="page-btn" id="nextBtn" onclick="changePage(1)">Next</button>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active" onclick="resetHome(event)">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </a>
+        <a href="#" class="nav-item" onclick="openCategoryModal(); return false;">
+            <span class="nav-icon">📂</span>
+            <span>Categories</span>
+        </a>
+        <a href="#" class="nav-item" onclick="openOrdersModal(); return false;">
+            <span class="nav-icon">📦</span>
+            <span>My Orders</span>
+        </a>
+        <a href="#" class="nav-item" onclick="openSocialModal(); return false;">
+            <span class="nav-icon">🌐</span>
+            <span>Social</span>
+        </a>
+        <a href="#" class="nav-item" onclick="openLoginModal(); return false;">
+            <span class="nav-icon">👤</span>
+            <span>Account</span>
+        </a>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="detail-modal-overlay" id="productDetailModal">
+        <div class="detail-modal-content">
+            <button class="close-detail-modal" onclick="closeProductDetailModal()">×</button>
+            <div class="detail-main-img-container">
+                <img id="modalMainImg" class="detail-main-img" src="" alt="Product">
+            </div>
+            <div class="detail-thumbs" id="modalThumbnails"></div>
+            <h2 class="detail-title" id="modalTitle">Product Title</h2>
+            <div class="detail-price-row">
+                <span class="detail-price" id="modalPrice">Rs. 0</span>
+                <span class="detail-old-price" id="modalOldPrice"></span>
+            </div>
+            <div class="detail-description-box" id="modalDescription">
+                Product full description goes here...
+            </div>
+
+            <!-- Buy / Order Form inside Modal -->
+            <div class="order-form-section">
+                <h3>📦 Place Your Order</h3>
+                <div class="qty-row">
+                    <span class="qty-label">Quantity:</span>
+                    <div class="qty-control">
+                        <button class="qty-btn" onclick="updateOrderQty(-1)">-</button>
+                        <span class="qty-val" id="orderQtyVal">1</span>
+                        <button class="qty-btn" onclick="updateOrderQty(1)">+</button>
+                    </div>
+                    <span class="total-price-tag" id="orderTotalPriceTag">Total: Rs. 0</span>
+                </div>
+                <input type="text" id="orderFirstName" class="order-input" placeholder="First Name">
+                <input type="text" id="orderLastName" class="order-input" placeholder="Last Name">
+                <input type="text" id="orderPhone1" class="order-input" placeholder="Contact Number 1">
+                <input type="text" id="orderPhone2" class="order-input" placeholder="Contact Number 2 (Optional)">
+                <input type="text" id="orderAddress" class="order-input" placeholder="Address">
+                <select id="orderDistrict" class="order-select">
+                    <option value="">Select District</option>
+                    <option value="Ampara">Ampara</option>
+                    <option value="Anuradhapura">Anuradhapura</option>
+                    <option value="Badulla">Badulla</option>
+                    <option value="Batticaloa">Batticaloa</option>
+                    <option value="Colombo">Colombo</option>
+                    <option value="Galle">Galle</option>
+                    <option value="Gampaha">Gampaha</option>
+                    <option value="Hambantota">Hambantota</option>
+                    <option value="Jaffna">Jaffna</option>
+                    <option value="Kalutara">Kalutara</option>
+                    <option value="Kandy">Kandy</option>
+                    <option value="Kegalle">Kegalle</option>
+                    <option value="Kilinochchi">Kilinochchi</option>
+                    <option value="Kurunegala">Kurunegala</option>
+                    <option value="Mannar">Mannar</option>
+                    <option value="Matale">Matale</option>
+                    <option value="Matara">Matara</option>
+                    <option value="Monaragala">Monaragala</option>
+                    <option value="Mullaitivu">Mullaitivu</option>
+                    <option value="Nuwara Eliya">Nuwara Eliya</option>
+                    <option value="Polonnaruwa">Polonnaruwa</option>
+                    <option value="Puttalam">Puttalam</option>
+                    <option value="Ratnapura">Ratnapura</option>
+                    <option value="Trincomalee">Trincomalee</option>
+                    <option value="Vavuniya">Vavuniya</option>
+                </select>
+                <input type="text" id="orderAddressInez" class="order-input" placeholder="Address Inez ( city )">
+                <input type="text" id="orderAdditionalInfo" class="order-input" placeholder="Additional Information (Optional)">
+                <button class="submit-order-btn" onclick="submitProductOrder()">Confirm Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Orders Status Modal -->
+    <div class="modal-overlay" id="ordersModal">
+        <div class="login-modal" style="max-width: 420px; text-align: left;">
+            <button class="close-modal" onclick="closeOrdersModal()">×</button>
+            <h2>My Orders & Tracking</h2>
+            <p>Check your order statuses (Pending, Processing, Shipped, Delivered).</p>
+            <div id="myOrdersListContainer" style="max-height: 300px; overflow-y: auto; margin-top: 10px;"></div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay" id="loginModal">
+        <div class="login-modal">
+            <button class="close-modal" onclick="closeLoginModal()">×</button>
+            <h2>Sign In / Register</h2>
+            <p>Enter your email to access your account & track orders.</p>
+            <div id="modalFormContent">
+                <input type="email" id="userLoginEmail" class="login-input" placeholder="name@example.com">
+                <button class="login-submit-btn" onclick="submitLogin()">Continue to Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="login-modal">
+            <button class="close-modal" onclick="closeCategoryModal()">×</button>
+            <h2>Product Categories</h2>
+            <p>Select a category to filter items.</p>
+            <div class="category-list" id="categoryLinksContainer"></div>
+        </div>
+    </div>
+
+    <!-- Social Links Modal -->
+    <div class="modal-overlay" id="socialModal">
+        <div class="login-modal">
+            <button class="close-modal" onclick="closeSocialModal()">×</button>
+            <h2>Connect With Us</h2>
+            <p>Visit our official social media channels.</p>
+            <div class="social-list" id="socialLinksContainer"></div>
+        </div>
+    </div>
+
+    <div class="toast-msg" id="toastMessage">Link copied to clipboard!</div>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        const BIN_ID = "6a8fe83ef5f4af5e29486ea0"; // Products Bin ID
+        const SETTINGS_BIN_ID = "6a900eb1f5f4af5e2948fb17"; // Settings & Social Links Bin ID
+        const ORDERS_BIN_ID = "6a90186df5f4af5e29491f4e"; // Orders Bin ID
+        const API_KEY = "$2a$10$Hi3n8Y6T2NwPxD89r3ACJeKXuPvPwHdWeRuITTUdKXJ.sNOdpjrJ2";
+        
+        let cloudProducts = [];
+        let currentPage = 1;
+        const itemsPerPage = 20;
+        let searchQuery = '';
+        let selectedCategory = '';
+        let currentSlideIndex = 0;
+        let slideInterval = null;
+        let activeModalProduct = null;
+        let orderQty = 1;
+
+        (function(){
+            emailjs.init("-faiU-JDM2NafGrdM"); 
+        })();
+
+        async function fetchCloudData() {
+            try {
+                let res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': API_KEY }
+                });
+                let data = await res.json();
+                let rawProducts = [];
+                
+                if (data.record && Array.isArray(data.record.products)) {
+                    rawProducts = data.record.products;
+                } else if (Array.isArray(data.record)) {
+                    rawProducts = data.record;
+                } else if (data.record && Array.isArray(data.record.record)) {
+                    rawProducts = data.record.record;
+                }
+                
+                cloudProducts = rawProducts.map((p, index) => ({...p, originalIndex: index}));
+                cloudProducts.sort(() => Math.random() - 0.5);
+
+                updateCategoriesList();
+                renderTrendingSlider();
+                renderProducts();
+            } catch (e) {
+                console.error("Cloud fetch error:", e);
+                cloudProducts = [];
+            }
+        }
+
+        async function loadSettingsFromCloud() {
+            try {
+                let res = await fetch(`https://api.jsonbin.io/v3/b/${SETTINGS_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': API_KEY }
+                });
+                let data = await res.json();
+                let settings = data.record || {};
+                
+                localStorage.setItem('zoxara_site_settings', JSON.stringify(settings));
+                applySettingsToUI(settings);
+            } catch (e) {
+                console.error("Settings fetch error from cloud, falling back to localStorage:", e);
+                let fallbackSettings = JSON.parse(localStorage.getItem('zoxara_site_settings')) || {};
+                applySettingsToUI(fallbackSettings);
+            }
+        }
+
+        function applySettingsToUI(settings) {
+            if (settings.brandName) {
+                document.getElementById('brandNameText').innerText = settings.brandName;
+                document.getElementById('pageTitle').innerText = settings.brandName;
+            }
+            if (settings.brandSub) {
+                document.getElementById('brandSubText').innerText = settings.brandSub;
+            }
+
+            let badge = document.getElementById('announcementBadge');
+            if (settings.announce) {
+                if(badge) {
+                    badge.innerText = settings.announce;
+                    badge.style.display = 'flex';
+                }
+            } else if (settings.announce === "") {
+                if(badge) badge.style.display = 'none';
+            }
+
+            if (settings.heroTitle) document.getElementById('heroTitle').innerText = settings.heroTitle;
+            if (settings.heroSubtitle) document.getElementById('heroSubtitle').innerText = settings.heroSubtitle;
+
+            let socialContainer = document.getElementById('socialLinksContainer');
+            let soc = settings.social || {};
+            let socialHtml = '';
+            
+            if(soc.fb) socialHtml += `<a href="${soc.fb}" target="_blank" class="social-link-item"><span>📘</span> Facebook</a>`;
+            if(soc.ig) socialHtml += `<a href="${soc.ig}" target="_blank" class="social-link-item"><span>📷</span> Instagram</a>`;
+            if(soc.pin) socialHtml += `<a href="${soc.pin}" target="_blank" class="social-link-item"><span>📌</span> Pinterest</a>`;
+            if(soc.tt) socialHtml += `<a href="${soc.tt}" target="_blank" class="social-link-item"><span>🎵</span> TikTok</a>`;
+            if(soc.wa) socialHtml += `<a href="${soc.wa}" target="_blank" class="social-link-item"><span>💬</span> WhatsApp</a>`;
+            if(soc.yt) socialHtml += `<a href="${soc.yt}" target="_blank" class="social-link-item"><span>▶️</span> YouTube</a>`;
+
+            if(socialHtml === '') {
+                socialHtml = '<p style="font-size:11px; color:#888; text-align:center;">No social links configured.</p>';
+            }
+            if(socialContainer) socialContainer.innerHTML = socialHtml;
+        }
+
+        function formatPrice(val, prod) {
+            let num = parseFloat(val);
+            if (isNaN(num)) return val;
+            
+            if (prod && (prod.currency === "USD" || prod.currency === "$" || prod.isUSD === true)) {
+                return "$" + num.toFixed(2);
+            }
+            
+            return "Rs. " + Math.round(num).toLocaleString();
+        }
+
+        function updateCategoriesList() {
+            let catContainer = document.getElementById('categoryLinksContainer');
+            let categoriesSet = new Set();
+
+            cloudProducts.forEach(p => {
+                let cat = p.category || 'general';
+                if (cat) categoriesSet.add(cat.trim().toLowerCase());
+            });
+
+            let catHtml = `<button class="category-item-btn" onclick="filterByCategory('')">✨ All Products</button>`;
+            categoriesSet.forEach(cat => {
+                let capitalized = cat.charAt(0).toUpperCase() + cat.slice(1);
+                catHtml += `<button class="category-item-btn" onclick="filterByCategory('${cat}')">📂 ${capitalized}</button>`;
+            });
+
+            catContainer.innerHTML = catHtml;
+        }
+
+        function filterByCategory(catName) {
+            selectedCategory = catName;
+            currentPage = 1;
+            closeCategoryModal();
+            
+            if (catName) {
+                let capitalized = catName.charAt(0).toUpperCase() + catName.slice(1);
+                document.getElementById('heroTitle').innerText = `Category: ${capitalized}`;
+                document.getElementById('heroSubtitle').innerText = `Showing items under ${capitalized} collection.`;
+            } else {
+                let settings = JSON.parse(localStorage.getItem('zoxara_site_settings')) || {};
+                document.getElementById('heroTitle').innerText = settings.heroTitle || "Exclusive Collections";
+                document.getElementById('heroSubtitle').innerText = settings.heroSubtitle || "Discover our latest curated arrivals and essentials.";
+            }
+
+            renderProducts();
+        }
+
+        function renderTrendingSlider() {
+            let sliderContainer = document.getElementById('trendingSlider');
+            let wrapper = document.getElementById('trendingSliderContainer');
+
+            if (cloudProducts.length === 0) {
+                wrapper.style.display = 'none';
+                return;
+            }
+            wrapper.style.display = 'block';
+
+            let settings = JSON.parse(localStorage.getItem('zoxara_site_settings')) || {};
+            let manualBanners = settings.banners || [];
+            let trendingItems = [];
+
+            if (manualBanners.length > 0) {
+                trendingItems = manualBanners;
+            } else {
+                trendingItems = cloudProducts.slice(0, 5).map(p => ({
+                    title: p.title,
+                    image: p.image,
+                    link: p.link
+                }));
+            }
+
+            let sliderHtml = '';
+            trendingItems.forEach((item, idx) => {
+                let activeClass = idx === 0 ? 'active' : '';
+                sliderHtml += `
+                    <div class="slide-item ${activeClass}" style="background-image: url('${item.image}');" onclick="handleBannerClick('${item.title}')">
+                        <div class="slide-overlay">
+                            <span class="trending-tag">Featured #${idx + 1}</span>
+                            <div class="slide-title">${item.title}</div>
+                            <div class="slide-subtitle">Click to explore item</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            sliderContainer.innerHTML = sliderHtml;
+
+            if (!slideInterval && trendingItems.length > 1) {
+                slideInterval = setInterval(autoSlide, 3500);
+            }
+        }
+
+        function handleBannerClick(title) {
+            let prod = cloudProducts.find(p => p.title === title);
+            if (prod) {
+                handleProductClick(prod.originalIndex);
+            }
+        }
+
+        function autoSlide() {
+            let slides = document.querySelectorAll('.slide-item');
+            if (slides.length === 0) return;
+
+            slides[currentSlideIndex].classList.remove('active');
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+            slides[currentSlideIndex].classList.add('active');
+        }
+
+        function renderProducts() {
+            let grid = document.getElementById('productGrid');
+            searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = cloudProducts.filter(prod => {
+                let matchesSearch = prod.title.toLowerCase().includes(searchQuery);
+                let prodCat = (prod.category || 'general').toLowerCase();
+                let matchesCategory = selectedCategory === '' || prodCat === selectedCategory.toLowerCase();
+                return matchesSearch && matchesCategory;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #888; font-size: 11px; padding: 30px;">No products found.</p>';
+                document.getElementById('paginationContainer').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('paginationContainer').style.display = 'flex';
+            let totalPages = Math.ceil(filtered.length / itemsPerPage);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            let start = (currentPage - 1) * itemsPerPage;
+            let paginatedItems = filtered.slice(start, start + itemsPerPage);
+
+            let html = '';
+            paginatedItems.forEach(prod => {
+                let badgeHtml = prod.badge ? `<span class="top-badge">${prod.badge}</span>` : '';
+                let oldPriceHtml = prod.oldPrice ? `<span class="old-price">${formatPrice(prod.oldPrice, prod)}</span>` : '';
+                let currentPriceFormatted = formatPrice(prod.price, prod);
+                
+                html += `
+                    <div class="product-card" id="product-${prod.originalIndex}" onclick="handleProductClick(${prod.originalIndex})">
+                        <div class="img-container">
+                            ${badgeHtml}
+                            <img class="product-img" src="${prod.image}" alt="${prod.title}">
+                        </div>
+                        <div class="product-body">
+                            <div class="product-title">${prod.title}</div>
+                            <div class="meta-info">
+                                <div class="price-row">
+                                    <span class="price-val">${currentPriceFormatted}</span>
+                                    ${oldPriceHtml}
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <button class="btn-view" onclick="event.stopPropagation(); handleProductClick(${prod.originalIndex})">🛒 Buy Now</button>
+                                <button class="btn-share" onclick="event.stopPropagation(); shareProduct(${prod.originalIndex})" title="Share Product">🔗</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+
+            document.getElementById('pageInfo').innerText = `Page ${currentPage} of ${totalPages || 1}`;
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
+
+            checkUrlHash();
+        }
+
+        function handleProductClick(index) {
+            let prod = cloudProducts.find(p => p.originalIndex === index);
+            if (!prod) return;
+
+            if (prod.link && prod.link.trim() !== "" && prod.link !== "#") {
+                window.open(prod.link, '_blank');
+            } else {
+                openProductDetailModal(prod);
+            }
+        }
+
+        function openProductDetailModal(prod) {
+            activeModalProduct = prod;
+            orderQty = 1;
+            document.getElementById('orderQtyVal').innerText = orderQty;
+            
+            document.getElementById('modalTitle').innerText = prod.title;
+            document.getElementById('modalPrice').innerText = formatPrice(prod.price, prod);
+            document.getElementById('modalOldPrice').innerText = prod.oldPrice ? formatPrice(prod.oldPrice, prod) : '';
+            document.getElementById('modalDescription').innerText = prod.description || "High quality item curated exclusively for Zoxara shoppers. Order now to get it delivered quickly!";
+
+            calculateModalTotal();
+
+            let allImages = [prod.image];
+            if (prod.extraImages && Array.isArray(prod.extraImages)) {
+                allImages = allImages.concat(prod.extraImages.filter(img => img !== ""));
+            }
+            
+            document.getElementById('modalMainImg').src = allImages[0];
+
+            let thumbsHtml = '';
+            allImages.forEach((imgUrl, i) => {
+                let activeClass = i === 0 ? 'active' : '';
+                thumbsHtml += `<img src="${imgUrl}" class="detail-thumb-img ${activeClass}" onclick="changeModalMainImage('${imgUrl}', this)">`;
+            });
+            document.getElementById('modalThumbnails').innerHTML = thumbsHtml;
+
+            let loggedEmail = localStorage.getItem('zoxara_logged_user');
+            if (loggedEmail) {
+                let namePart = loggedEmail.split('@')[0];
+                let fInput = document.getElementById('orderFirstName');
+                if (fInput && !fInput.value) fInput.value = namePart;
+            }
+
+            document.getElementById('productDetailModal').classList.add('active');
+        }
+
+        function updateOrderQty(change) {
+            orderQty += change;
+            if (orderQty < 1) orderQty = 1;
+            document.getElementById('orderQtyVal').innerText = orderQty;
+            calculateModalTotal();
+        }
+
+        function calculateModalTotal() {
+            if (!activeModalProduct) return;
+            let unitPrice = parseFloat(activeModalProduct.price) || 0;
+            let total = unitPrice * orderQty;
+            document.getElementById('orderTotalPriceTag').innerText = "Total: " + formatPrice(total, activeModalProduct);
+        }
+
+        function changeModalMainImage(url, thumbEl) {
+            document.getElementById('modalMainImg').src = url;
+            document.querySelectorAll('.detail-thumb-img').forEach(t => t.classList.remove('active'));
+            thumbEl.classList.add('active');
+        }
+
+        function closeProductDetailModal() {
+            document.getElementById('productDetailModal').classList.remove('active');
+        }
+
+        async function submitProductOrder() {
+            let firstName = document.getElementById('orderFirstName').value.trim();
+            let lastName = document.getElementById('orderLastName').value.trim();
+            let phone1 = document.getElementById('orderPhone1').value.trim();
+            let phone2 = document.getElementById('orderPhone2').value.trim();
+            let address = document.getElementById('orderAddress').value.trim();
+            let district = document.getElementById('orderDistrict').value;
+            let addressInez = document.getElementById('orderAddressInez').value.trim();
+            let additionalInfo = document.getElementById('orderAdditionalInfo').value.trim();
+
+            if (!firstName || !lastName || !phone1 || !address || !district || !addressInez) {
+                alert("Please fill in all required order details (First Name, Last Name, Contact Number 1, Address, District, and Address Inez).");
+                return;
+            }
+
+            let unitPrice = parseFloat(activeModalProduct.price) || 0;
+            let totalPrice = unitPrice * orderQty;
+
+            let fullAddress = address + ", " + district + " (" + addressInez + ")";
+            let newOrder = {
+                productName: activeModalProduct.title,
+                productImage: activeModalProduct.image,
+                quantity: orderQty,
+                unitPrice: formatPrice(unitPrice, activeModalProduct),
+                totalPrice: formatPrice(totalPrice, activeModalProduct),
+                customerEmail: localStorage.getItem('zoxara_logged_user') || phone1,
+                customerName: firstName + " " + lastName,
+                customerPhone: phone1,
+                customerAddress: fullAddress,
+                customerNote: additionalInfo,
+                status: "Pending",
+                adminNote: "",
+                orderDate: new Date().toLocaleString()
+            };
+
+            let existingOrders = JSON.parse(localStorage.getItem('zoxara_customer_orders')) || [];
+            existingOrders.push(newOrder);
+            localStorage.setItem('zoxara_customer_orders', JSON.stringify(existingOrders));
+
+            try {
+                let getRes = await fetch(`https://api.jsonbin.io/v3/b/${ORDERS_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': API_KEY }
+                });
+                let getData = await getRes.json();
+                let remoteOrders = [];
+                if (getData.record && Array.isArray(getData.record.orders)) {
+                    remoteOrders = getData.record.orders;
+                } else if (Array.isArray(getData.record)) {
+                    remoteOrders = getData.record;
+                }
+                remoteOrders.push(newOrder);
+
+                await fetch(`https://api.jsonbin.io/v3/b/${ORDERS_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': API_KEY
+                    },
+                    body: JSON.stringify({ orders: remoteOrders })
+                });
+            } catch (err) {
+                console.error("Error updating orders bin:", err);
+            }
+
+            alert(`Order placed successfully for ${activeModalProduct.title}! Thank you.`);
+            closeProductDetailModal();
+            
+            document.getElementById('orderFirstName').value = '';
+            document.getElementById('orderLastName').value = '';
+            document.getElementById('orderPhone1').value = '';
+            document.getElementById('orderPhone2').value = '';
+            document.getElementById('orderAddress').value = '';
+            document.getElementById('orderDistrict').value = '';
+            document.getElementById('orderAddressInez').value = '';
+            document.getElementById('orderAdditionalInfo').value = '';
+        }
+
+        async function openOrdersModal() {
+            let container = document.getElementById('myOrdersListContainer');
+            let orders = JSON.parse(localStorage.getItem('zoxara_customer_orders')) || [];
+            
+            try {
+                let res = await fetch(`https://api.jsonbin.io/v3/b/${ORDERS_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': API_KEY }
+                });
+                let data = await res.json();
+                if (data.record && Array.isArray(data.record.orders)) {
+                    orders = data.record.orders;
+                } else if (Array.isArray(data.record)) {
+                    orders = data.record;
+                }
+            } catch (e) {
+                console.error("Could not fetch orders from cloud, using local storage:", e);
+            }
+
+            let loggedEmail = localStorage.getItem('zoxara_logged_user');
+            let userOrders = orders.filter(o => !loggedEmail || o.customerEmail === loggedEmail || o.customerPhone === loggedEmail);
+
+            if (userOrders.length === 0) {
+                container.innerHTML = '<p style="font-size: 11px; color: #888; text-align:center; padding: 20px;">No active orders found.</p>';
+            } else {
+                let html = '';
+                userOrders.slice().reverse().forEach(ord => {
+                    let st = ord.status || 'Pending';
+                    let badgeColor = '#e67e22';
+                    if (st === 'Processing') badgeColor = '#3498db';
+                    if (st === 'Shipped') badgeColor = '#9b59b6';
+                    if (st === 'Delivered') badgeColor = '#2ecc71';
+
+                    let qtyDisplay = ord.quantity ? ` (x${ord.quantity})` : '';
+                    let priceDisplay = ord.totalPrice ? ` - ${ord.totalPrice}` : '';
+
+                    html += `
+                        <div style="background: #1e1e22; padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid ${badgeColor}; color: #fff;">
+                            <div style="font-size: 12px; font-weight: bold; margin-bottom: 4px;">📦 ${ord.productName}${qtyDisplay}${priceDisplay}</div>
+                            <div style="font-size: 11px; color: #ccc;">📍 Address: ${ord.customerAddress}</div>
+                            <div style="font-size: 11px; color: #ccc; margin-top: 2px;">🕒 Date: ${ord.orderDate || 'Recent'}</div>
+                            <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 10px; background: ${badgeColor}; padding: 3px 8px; border-radius: 6px; font-weight: bold; text-transform: uppercase;">${st}</span>
+                                <span style="font-size: 10px; color: #aaa;">${ord.adminNote ? 'Note: ' + ord.adminNote : ''}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            document.getElementById('ordersModal').classList.add('active');
+        }
+
+        function closeOrdersModal() {
+            document.getElementById('ordersModal').classList.remove('active');
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            renderProducts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function filterProducts() {
+            currentPage = 1;
+            renderProducts();
+        }
+
+        function resetHome(e) {
+            e.preventDefault();
+            selectedCategory = '';
+            document.getElementById('searchInput').value = '';
+            let settings = JSON.parse(localStorage.getItem('zoxara_site_settings')) || {};
+            document.getElementById('heroTitle').innerText = settings.heroTitle || "Exclusive Collections";
+            document.getElementById('heroSubtitle').innerText = settings.heroSubtitle || "Discover our latest curated arrivals and essentials.";
+            renderProducts();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function shareProduct(index) {
+            let productUrl = window.location.origin + window.location.pathname + `#product-${index}`;
+            if (navigator.share) {
+                navigator.share({ title: 'Zoxara Shop Item', url: productUrl }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(productUrl).then(() => {
+                    showToast("Product link copied to clipboard!");
+                });
+            }
+        }
+
+        function shareEntireSite() {
+            let siteUrl = window.location.href;
+            if (navigator.share) {
+                navigator.share({ title: 'Zoxara Shop', url: siteUrl }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(siteUrl).then(() => {
+                    showToast("Shop link copied to clipboard!");
+                });
+            }
+        }
+
+        function checkUrlHash() {
+            if (window.location.hash) {
+                let hash = window.location.hash;
+                let targetCard = document.querySelector(hash);
+                if (targetCard) {
+                    setTimeout(() => {
+                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        targetCard.classList.add('highlighted');
+                        setTimeout(() => targetCard.classList.remove('highlighted'), 3000);
+                    }, 200);
+                }
+            }
+        }
+
+        function openLoginModal() { document.getElementById('loginModal').classList.add('active'); }
+        function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
+        function openCategoryModal() { document.getElementById('categoryModal').classList.add('active'); }
+        function closeCategoryModal() { document.getElementById('categoryModal').classList.remove('active'); }
+        function openSocialModal() { document.getElementById('socialModal').classList.add('active'); }
+        function closeSocialModal() { document.getElementById('socialModal').classList.remove('active'); }
+
+        function submitLogin() {
+            let email = document.getElementById('userLoginEmail').value.trim();
+            if (email) {
+                closeLoginModal();
+                let subscribers = JSON.parse(localStorage.getItem('zoxara_subscribers')) || [];
+                if (!subscribers.includes(email)) {
+                    subscribers.push(email);
+                    localStorage.setItem('zoxara_subscribers', JSON.stringify(subscribers));
+                }
+                localStorage.setItem('zoxara_logged_user', email);
+                applyUserSession(email);
+                showToast("✓ Successfully Logged In!");
+            } else {
+                alert("Please enter a valid email.");
+            }
+        }
+
+        function applyUserSession(email) {
+            let loginBtn = document.getElementById('loginBtnElement');
+            let actionsContainer = document.getElementById('userActionsContainer');
+            let initialLetter = email.charAt(0).toUpperCase();
+            
+            if (loginBtn) {
+                let avatar = document.createElement('div');
+                avatar.className = 'profile-avatar';
+                avatar.innerText = initialLetter;
+                avatar.title = email;
+                loginBtn.replaceWith(avatar);
+            } else if (actionsContainer && !document.querySelector('.profile-avatar')) {
+                let avatar = document.createElement('div');
+                avatar.className = 'profile-avatar';
+                avatar.innerText = initialLetter;
+                avatar.title = email;
+                actionsContainer.prepend(avatar);
+            }
+
+            let badge = document.getElementById('announcementBadge');
+            if (badge) badge.style.display = 'none';
+        }
+
+        function showToast(msg) {
+            let toast = document.getElementById('toastMessage');
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        window.onload = async function() {
+            await loadSettingsFromCloud();
+            await fetchCloudData();
+
+            let savedUser = localStorage.getItem('zoxara_logged_user');
+            if (savedUser) {
+                applyUserSession(savedUser);
+            }
+        };
+    </script>
+</body>
+</html>
